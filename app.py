@@ -1,34 +1,49 @@
+import pytesseract
+from PIL import Image
 import pandas as pd
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix
-
-# Load dataset
-df = pd.read_csv('C://Users//Samanth Abbur//pro//stream//DEDuCT_ChemicalBasicInformation.csv')
-
-# Separate features (X) and target variable (y)
-X = df.drop('estrogen present', axis=1)  # Assuming 'estrogenic' is the target column
-y = df['estrogen present']
-
-# Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 
-# Initialize logistic regression model
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('stopwords')
+
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
+
+def preprocess_text(text):
+    tokens = word_tokenize(text)
+    tokens = [word.lower() for word in tokens if word.isalpha()]
+    tokens = [word for word in tokens if word not in stop_words]
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    return ' '.join(tokens)
+
+def tokenize_text(text):
+    return preprocess_text(text).split()
+
+text_data = pd.read_csv("C://Users//Samanth Abbur//pro//stream//DEDuCT_ChemicalBasicInformation.csv")
+text_data['processed'] = text_data['Name'].apply(preprocess_text)
+
+vectorizer = TfidfVectorizer(tokenizer=tokenize_text, preprocessor=None)
+X = vectorizer.fit_transform(text_data['processed'])
+
+y = text_data['estrogen present']
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
 model = LogisticRegression()
-
-# Train the model
 model.fit(X_train, y_train)
 
-# Predict on test data
 y_pred = model.predict(X_test)
 
-# Evaluate model performance
-print(classification_report(y_test, y_pred))
-
-# Print confusion matrix
-print(confusion_matrix(y_test, y_pred))
 
 
 import streamlit as st
@@ -37,13 +52,6 @@ import streamlit as st
 # Assume you've already imported necessary libraries and loaded your dataset
 
 
-from PIL import Image
-import pytesseract
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix
-import numpy as np
 
 # Setup Tesseract path
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Update this path if necessary
@@ -83,6 +91,4 @@ elif text_input:
     prediction = predict_text(text_input)
     st.write('Input Text:', text_input)
     st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
-
-
 
