@@ -8,15 +8,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 
-# Setup Tesseract path (update this path if necessary)
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Load dataset
-df = pd.read_csv('C://Users//amanth Abbur//pro//stream//DEDuCT_ChemicalBasicInformation.csv')
 
-# Ensure the dataset has a 'text_column' and 'estrogenic' column
-# Replace 'text_column' with the actual name of the column containing the text data
-text_column_name = 'Name'
+file_path = r'C:\Users\Samanth Abbur\pro\stream\DEDuCT_ChemicalBasicInformation.csv'
+
+
+df = pd.read_csv(file_path)
+
+#
+text_column_name = 'Name'  # Change this to your actual text column name
 
 # Separate features (X) and target variable (y)
 X = df[text_column_name]
@@ -39,6 +39,10 @@ model.fit(X_train, y_train)
 
 # Evaluate the model
 y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+
+
 
 
 
@@ -75,3 +79,8 @@ elif text_input:
     prediction = predict_text(text_input)
     st.write('Input Text:', text_input)
     st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+
+
+   
+   
+
