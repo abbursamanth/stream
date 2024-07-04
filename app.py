@@ -7,8 +7,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 df = pd.read_csv('C://Users//Samanth Abbur//pro//stream//DEDuCT_ChemicalBasicInformation.csv')
 
 # Separate features (X) and target variable (y)
-X = df.drop('estrogenic present', axis=1)  # Assuming 'estrogenic' is the target column
-y = df['estrogenic present']
+X = df.drop('estrogen present', axis=1)  # Assuming 'estrogenic' is the target column
+y = df['estrogen present']
 
 # Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
