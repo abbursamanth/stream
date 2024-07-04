@@ -73,7 +73,7 @@ if uploaded_file is not None:
     prediction, extracted_text = predict_image(image)
     st.image(image, caption='Uploaded Image', use_column_width=True)
     st.write('Extracted Text:', extracted_text)
-    st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+    st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'ESTROGENIC')
 
 elif text_input:
     prediction = predict_text(text_input)
