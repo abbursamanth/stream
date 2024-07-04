@@ -1,60 +1,45 @@
-import pytesseract
+import streamlit as st
 from PIL import Image
+import pytesseract
 import pandas as pd
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, confusion_matrix
+import numpy as np
 
+# Setup Tesseract path (update this path if necessary)
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
+# Load dataset
+df = pd.read_csv('C://Users//amanth Abbur//pro//stream//DEDuCT_ChemicalBasicInformation.csv')
 
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('stopwords')
+# Ensure the dataset has a 'text_column' and 'estrogenic' column
+# Replace 'text_column' with the actual name of the column containing the text data
+text_column_name = 'Name'
 
-stop_words = set(stopwords.words('english'))
-lemmatizer = WordNetLemmatizer()
+# Separate features (X) and target variable (y)
+X = df[text_column_name]
+y = df['estrogen present']
 
-def preprocess_text(text):
-    tokens = word_tokenize(text)
-    tokens = [word.lower() for word in tokens if word.isalpha()]
-    tokens = [word for word in tokens if word not in stop_words]
-    tokens = [lemmatizer.lemmatize(word) for word in tokens]
-    return ' '.join(tokens)
+# Initialize TF-IDF Vectorizer
+vectorizer = TfidfVectorizer()
 
-def tokenize_text(text):
-    return preprocess_text(text).split()
+# Fit and transform the training data
+X_tfidf = vectorizer.fit_transform(X)
 
-text_data = pd.read_csv("C://Users//Samanth Abbur//pro//stream//DEDuCT_ChemicalBasicInformation.csv")
-text_data['processed'] = text_data['Name'].apply(preprocess_text)
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.2, random_state=42)
 
-vectorizer = TfidfVectorizer(tokenizer=tokenize_text, preprocessor=None)
-X = vectorizer.fit_transform(text_data['processed'])
-
-y = text_data['estrogen present']
-
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-
+# Initialize logistic regression model
 model = LogisticRegression()
+
+# Train the model
 model.fit(X_train, y_train)
 
+# Evaluate the model
 y_pred = model.predict(X_test)
 
-
-
-import streamlit as st
-
-# Load libraries and data
-# Assume you've already imported necessary libraries and loaded your dataset
-
-
-
-# Setup Tesseract path
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Update this path if necessary
 
 
 def process_image(image):
@@ -62,10 +47,9 @@ def process_image(image):
     return text
 
 def predict_text(text):
-    # Example: Convert text to features, predict using the model
-    # Here we should implement text preprocessing and feature extraction
-    text_features = [len(text)]  # Example feature
-    prediction = model.predict([text_features])
+    # Transform the input text to TF-IDF features
+    text_tfidf = vectorizer.transform([text])
+    prediction = model.predict(text_tfidf)
     return prediction
 
 def predict_image(image):
@@ -91,4 +75,3 @@ elif text_input:
     prediction = predict_text(text_input)
     st.write('Input Text:', text_input)
     st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
-
