@@ -8,7 +8,7 @@ import requests
 
 def check_ingredients(text):
     # Replace with actual API call and logic
-    response = requests.post("LL-K56g8ecLETBnnLKcvt2IUHGPdvOMtwINDL05qDdhwyi98dLqpFxILxAE9XtmB3Zi", data={"text": text})
+   
     return response.json()
 
 def get_health_effects(chemical):
