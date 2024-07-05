@@ -78,6 +78,13 @@ def check_login(username, password):
         return True
     return False
 
+# Function to register a new user
+def register_user(username, password):
+    if username in user_db:
+        return False
+    user_db[username] = password
+    return True
+
 # Function to login
 def login():
     st.session_state.logged_in = True
@@ -88,13 +95,17 @@ def logout():
     st.session_state.username = ""
 
 
-# Initialize session state for login
+
+
+# Initialize session state for login and registration
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
     st.session_state.username = ""
+if 'register' not in st.session_state:
+    st.session_state.register = False
 
-# Login page
-if not st.session_state.logged_in:
+# Login and Registration pages
+if not st.session_state.logged_in and not st.session_state.register:
     st.title("Login")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -105,6 +116,20 @@ if not st.session_state.logged_in:
             st.success("Login successful")
         else:
             st.error("Invalid username or password")
+    if st.button("Register"):
+        st.session_state.register = True
+elif not st.session_state.logged_in and st.session_state.register:
+    st.title("Register")
+    new_username = st.text_input("New Username")
+    new_password = st.text_input("New Password", type="password")
+    if st.button("Create Account"):
+        if register_user(new_username, new_password):
+            st.session_state.register = False
+            st.success("Registration successful. Please login.")
+        else:
+            st.error("Username already exists. Please choose a different username.")
+    if st.button("Back to Login"):
+        st.session_state.register = False
 else:
     st.sidebar.button("Logout", on_click=logout)
     st.title(f'Welcome, {st.session_state.username}')
@@ -121,12 +146,19 @@ else:
         prediction, extracted_text = predict_image(image)
         st.image(image, caption='Uploaded Image', use_column_width=True)
         st.write('Extracted Text:', extracted_text)
-        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'ESTROGENIC')
 
     elif text_input:
         prediction = predict_text(text_input)
         st.write('Input Text:', text_input)
-        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'ESTROGENIC')
+
+
+
+
+
+
+
 
 
 
