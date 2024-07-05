@@ -145,4 +145,4 @@ else:
     elif text_input:
         prediction = predict_text(text_input)
         st.write('Input Text:', text_input)
-        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Estrogenic')
