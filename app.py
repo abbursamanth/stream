@@ -9,6 +9,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 
 
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
 
 file_path = r'C:\Users\Samanth Abbur\pro\stream\DEDuCT_ChemicalBasicInformation.csv'
 
@@ -61,24 +63,71 @@ def predict_image(image):
     prediction = predict_text(text)
     return prediction, text
 
-# Streamlit UI
-st.title('Endocrine Disruptors and Estrogen Prediction')
 
-# File uploader for image
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-text_input = st.text_area("Or enter text directly:")
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    prediction, extracted_text = predict_image(image)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
-    st.write('Extracted Text:', extracted_text)
-    st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'ESTROGENIC')
 
-elif text_input:
-    prediction = predict_text(text_input)
-    st.write('Input Text:', text_input)
-    st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+# Simple user database (in practice, use a database and hashed passwords)
+user_db = {
+    "user1": "password1",
+    "user2": "password2"
+}
+
+# Function to check login
+def check_login(username, password):
+    if username in user_db and user_db[username] == password:
+        return True
+    return False
+
+# Function to login
+def login():
+    st.session_state.logged_in = True
+
+# Function to logout
+def logout():
+    st.session_state.logged_in = False
+    st.session_state.username = ""
+
+
+# Initialize session state for login
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+    st.session_state.username = ""
+
+# Login page
+if not st.session_state.logged_in:
+    st.title("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        if check_login(username, password):
+            st.session_state.username = username
+            login()
+            st.success("Login successful")
+        else:
+            st.error("Invalid username or password")
+else:
+    st.sidebar.button("Logout", on_click=logout)
+    st.title(f'Welcome, {st.session_state.username}')
+
+    # Streamlit UI for the main application
+    st.title('Endocrine Disruptors and Estrogen Prediction')
+
+    # File uploader for image
+    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    text_input = st.text_area("Or enter text directly:")
+
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        prediction, extracted_text = predict_image(image)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+        st.write('Extracted Text:', extracted_text)
+        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+
+    elif text_input:
+        prediction = predict_text(text_input)
+        st.write('Input Text:', text_input)
+        st.write('Prediction:', 'estrogen present' if prediction[0] == 1 else 'Non-Estrogenic')
+
 
 
    
