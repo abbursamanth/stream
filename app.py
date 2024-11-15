@@ -14,10 +14,7 @@ from firebase_admin import credentials, firestore
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # Firebase initialization function
-def initialize_firebase():
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(r'C:\Users\Samanth Abbur\pro\stream\estrovision-6085a-firebase-adminsdk-8mdt6-6b38b2c831.json')
-        firebase_admin.initialize_app(cred)
+
 
 # Call the Firebase initialization function
 initialize_firebase()
