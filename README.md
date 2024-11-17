@@ -4,7 +4,7 @@ Reducing the life expectancy of a average human being by disrupting the endocrin
 We are leveraging the power of machine learning to predict the harmful chemicals used in day to day life.
 
 contributers : 
-1. @abbursamanth
-2. @Tus20
-3. @meflux
+1. https://github.com/abbursamanth
+2. https://github.com/newflux
+4. https://github.com/Tus20
                 
